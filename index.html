@@ -17,6 +17,15 @@ body {
     background: radial-gradient(circle at center, #f5f5f5, #fff);
 }
 
+        background-color: #ffffff; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: white;
+}
 
     
 @keyframes spin {
@@ -41,7 +50,24 @@ body {
 @keyframes pop {
     to { opacity: 1; transform: scale(1); }
 }
+button {
+    margin-top: 20px;
+    background: #000000;
+    color: white;
+    border: none;
+    padding: 15px;
+    width: 80%;
+    max-width: 280px;
+    font-size: 18px;
+    border-radius: 12px;
+    cursor: pointer;
+}
 
+button:hover {
+    background: #222;
+    
+    
+}
 .card {
     margin: 30px auto;
     padding: 25px;
@@ -72,6 +98,9 @@ body {
 <audio id="sound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a1b5c2.mp3?filename=notification-1-126509.mp3"></audio>
 
 <script>
+    
+    
+    
 const firebaseConfig = {
   apiKey: "TU_API_KEY",
   authDomain: "TU_DOMINIO",
@@ -246,7 +275,56 @@ ref.get().then((doc) => {
     <div class="info">
         Escaneos totales: <strong id="scanCount">...</strong>
     </div>
+    
+<button onclick="verify()">VERIFICAR 📡</button>   
+    
+    <script>
+function verify() {
+    alert("Producto verificado correctamente ✅");
+}
+</script>
+    <script>
+// 🔥 CONFIGURA ESTO CON TU FIREBASE REAL
+const firebaseConfig = {
+  apiKey: "TU_API_KEY",
+  authDomain: "TU_DOMINIO",
+  projectId: "TU_PROJECT_ID",
+};
 
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// 📌 ID dinámico (para diferentes gorras)
+const params = new URLSearchParams(window.location.search);
+const productId = params.get("id") || "RS-0001";
+
+const ref = db.collection("scans").doc(productId);
+
+// 🔊 sonido
+window.onload = () => {
+    document.getElementById("sound").play().catch(()=>{});
+};
+
+// 🚀 🔥 CONTADOR EN TIEMPO REAL
+ref.onSnapshot((doc) => {
+    if (doc.exists) {
+        document.getElementById("scanCount").innerText = doc.data().count;
+    } else {
+        document.getElementById("scanCount").innerText = 0;
+    }
+});
+
+// ➕ SUMAR ESCANEO (solo una vez por carga)
+ref.get().then((doc) => {
+    if (doc.exists) {
+        ref.update({
+            count: firebase.firestore.FieldValue.increment(1)
+        });
+    } else {
+        ref.set({ count: 1 });
+    }
+});
+</script>
 </div>
 
 </body>
