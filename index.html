@@ -183,7 +183,45 @@ body {
     font-size: 13px;
     color: #ccc;
 }
-    
+    const firebaseConfig = {
+  apiKey: "TU_API_KEY",
+  authDomain: "TU_DOMINIO",
+  projectId: "TU_PROJECT_ID",
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+
+const params = new URLSearchParams(window.location.search);
+const productId = params.get("id") || "RS-0001";
+
+const ref = db.collection("scans").doc(productId);
+
+
+window.onload = () => {
+    document.getElementById("sound").play().catch(()=>{});
+};
+
+
+ref.onSnapshot((doc) => {
+    if (doc.exists) {
+        document.getElementById("scanCount").innerText = doc.data().count;
+    } else {
+        document.getElementById("scanCount").innerText = 0;
+    }
+});
+
+
+ref.get().then((doc) => {
+    if (doc.exists) {
+        ref.update({
+            count: firebase.firestore.FieldValue.increment(1)
+        });
+    } else {
+        ref.set({ count: 1 });
+    }
+});
     </script>
 
 <div class="header">
