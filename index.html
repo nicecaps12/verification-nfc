@@ -24,7 +24,7 @@ body {
     height: 100vh;
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: white;
+    color: #ffffff;
 }
 
     
@@ -282,9 +282,8 @@ ref.get().then((doc) => {
 function verify() {
     alert("Producto verificado correctamente ✅");
 }
-</script>
-    <script>
-// 🔥 CONFIGURA ESTO CON TU FIREBASE REAL
+<script>
+// 🔥 CONFIGURA CON TU FIREBASE REAL
 const firebaseConfig = {
   apiKey: "TU_API_KEY",
   authDomain: "TU_DOMINIO",
@@ -294,18 +293,20 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// 📌 ID dinámico (para diferentes gorras)
+// 📌 Obtener ID dinámico
 const params = new URLSearchParams(window.location.search);
 const productId = params.get("id") || "RS-0001";
 
+document.getElementById("productId").innerText = productId;
+
 const ref = db.collection("scans").doc(productId);
 
-// 🔊 sonido
+// 🔊 sonido al abrir
 window.onload = () => {
     document.getElementById("sound").play().catch(()=>{});
 };
 
-// 🚀 🔥 CONTADOR EN TIEMPO REAL
+// 🔥 CONTADOR EN TIEMPO REAL
 ref.onSnapshot((doc) => {
     if (doc.exists) {
         document.getElementById("scanCount").innerText = doc.data().count;
@@ -314,7 +315,7 @@ ref.onSnapshot((doc) => {
     }
 });
 
-// ➕ SUMAR ESCANEO (solo una vez por carga)
+// ➕ SUMAR ESCANEO SOLO UNA VEZ
 ref.get().then((doc) => {
     if (doc.exists) {
         ref.update({
@@ -324,6 +325,11 @@ ref.get().then((doc) => {
         ref.set({ count: 1 });
     }
 });
+
+// botón
+function verify() {
+    alert("Producto verificado correctamente ✅");
+}
 </script>
 </div>
 
