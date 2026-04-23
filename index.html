@@ -15,6 +15,7 @@ body {
     font-family: Arial, sans-serif;
     text-align: center;
     background: radial-gradient(circle at center, #f5f5f5, #fff);
+    background-color: #fff
 }
 
         background-color: #ffffff; 
@@ -263,7 +264,9 @@ ref.get().then((doc) => {
     
 <div class="card">
 
-    <div class="check">✔</div>
+  <div class="check">
+    <span>✔</span>
+</div>
 
     <div class="title">Producto verificado como auténtico</div>
 
@@ -315,18 +318,24 @@ ref.onSnapshot((doc) => {
     }
 });
 
-// ➕ SUMAR ESCANEO SOLO UNA VEZ
-ref.get().then((doc) => {
-    if (doc.exists) {
-        ref.update({
-            count: firebase.firestore.FieldValue.increment(1)
-        });
+db.runTransaction(async (transaction) => {
+    const doc = await transaction.get(ref);
+
+    if (!doc.exists) {
+        transaction.set(ref, { count: 1 });
     } else {
-        ref.set({ count: 1 });
+        const newCount = doc.data().count + 1;
+        transaction.update(ref, { count: newCount });
     }
 });
 
-// botón
+function verify() {
+    alert("Producto verificado correctamente ✅");
+}
+          <div class="info">
+ Escaneos totales: <strong id="scanCount">...</strong>
+</script>
+    <script>
 function verify() {
     alert("Producto verificado correctamente ✅");
 }
